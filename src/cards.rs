@@ -41,10 +41,10 @@ impl TryFrom<u8> for CardFace {
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
             1 => Ok(Self::Ace),
-            v @ 2..=9 => Ok(Self::Number(v)),
-            10 => Ok(Self::Jack),
-            11 => Ok(Self::Queen),
-            12 => Ok(Self::King),
+            v @ 2..=10 => Ok(Self::Number(v)),
+            11 => Ok(Self::Jack),
+            12 => Ok(Self::Queen),
+            13 => Ok(Self::King),
             e => Err(CardValueError(e))
         }
     }
