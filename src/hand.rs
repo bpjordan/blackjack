@@ -1,6 +1,10 @@
 
 use super::cards::{Card, CardFace};
 
+/// A player's hand. Wrapper struct for a vec of Cards.
+/// 
+/// Can also provide the total value of the hand, accounting
+/// for Aces being either 11 or 1
 pub struct Hand(Vec<Card>);
 
 impl Hand {
@@ -16,7 +20,7 @@ impl Hand {
         self.0.push(card);
     }
 
-    pub fn values(&self) -> Vec<ValueInHand> {
+    fn values(&self) -> Vec<ValueInHand> {
         self.cards().iter().map(|c| {
             match c.face() {
                 CardFace::Number(v) => ValueInHand::Set(v.clone()),
@@ -57,7 +61,7 @@ impl Hand {
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum ValueInHand {
+enum ValueInHand {
     Set(u8),
     Wild
 }
