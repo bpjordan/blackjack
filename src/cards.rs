@@ -35,12 +35,17 @@ pub enum CardFace {
 #[derive(Debug)]
 pub struct CardValueError(u8);
 
-impl CardFace {
-    pub fn number(val: u8) -> Result<Self, CardValueError> {
-        if (1..=9).contains(&val) {
-            Ok(Self::Number(val))
-        } else {
-            Err(CardValueError(val))
+impl TryFrom<u8> for CardFace {
+    type Error = CardValueError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            1 => Ok(Self::Ace),
+            v @ 2..=9 => Ok(Self::Number(v)),
+            10 => Ok(Self::Jack),
+            11 => Ok(Self::Queen),
+            12 => Ok(Self::King),
+            e => Err(CardValueError(e))
         }
     }
 }
@@ -94,13 +99,7 @@ impl Card {
             e => return Err(CardValueError(e))
         };
 
-        let face = match rng.gen_range(1..=12) {
-            1 => CardFace::Ace,
-            10 => CardFace::Jack,
-            11 => CardFace::Queen,
-            12 => CardFace::King,
-            v => CardFace::number(v)?
-        };
+        let face = CardFace::try_from(rng.gen_range(1..=12))?;
 
         Ok(Self { suit, face })
     }
@@ -130,7 +129,7 @@ mod tests {
         );
 
         assert_eq!(
-            Card::new(CardFace::number(3).unwrap(), CardSuit::Hearts).to_string(),
+            Card::new(CardFace::try_from(3).unwrap(), CardSuit::Hearts).to_string(),
             "3 of Hearts".to_owned()
         );
     }
@@ -139,7 +138,7 @@ mod tests {
     fn card_values() {
         assert_eq!(
             u8::from(
-                Card::new(CardFace::number(8).unwrap(), CardSuit::Diamonds)
+                Card::new(CardFace::try_from(8).unwrap(), CardSuit::Diamonds)
             ),
             8
         );
