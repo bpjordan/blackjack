@@ -30,6 +30,19 @@ pub enum CardFace {
     Ace
 }
 
+#[derive(Debug)]
+pub struct CardValueError(u8);
+
+impl CardFace {
+    pub fn number(val: u8) -> Result<Self, CardValueError> {
+        if (1..9).contains(&val) {
+            Ok(Self::Number(val))
+        } else {
+            Err(CardValueError(val))
+        }
+    }
+}
+
 impl From<CardFace> for u8 {
     fn from(value: CardFace) -> Self {
         match value {
@@ -92,7 +105,7 @@ mod tests {
         );
 
         assert_eq!(
-            Card::new(CardFace::Number(3), CardSuit::Hearts).to_string(),
+            Card::new(CardFace::number(3).unwrap(), CardSuit::Hearts).to_string(),
             "3 of Hearts".to_owned()
         );
     }
@@ -101,7 +114,7 @@ mod tests {
     fn card_values() {
         assert_eq!(
             u8::from(
-                Card::new(CardFace::Number(8), CardSuit::Diamonds)
+                Card::new(CardFace::number(8).unwrap(), CardSuit::Diamonds)
             ),
             8
         );
