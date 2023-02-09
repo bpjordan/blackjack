@@ -12,6 +12,10 @@ impl Hand {
         Self(cards)
     }
 
+    pub fn push(&mut self, card: Card) {
+        self.0.push(card);
+    }
+
     pub fn values(&self) -> Vec<ValueInHand> {
         self.cards().iter().map(|c| {
             match c.face() {
@@ -113,5 +117,28 @@ mod tests {
         ]);
 
         assert_eq!(h.total_value(), 15)
+    }
+
+    #[test]
+    fn push_to_values() {
+        let mut h = Hand::new(vec![
+            Card::new(CardFace::try_from(8).unwrap(), CardSuit::Spades),
+            Card::new(CardFace::try_from(12).unwrap(), CardSuit::Diamonds)
+        ]);
+
+        let mut i = h.values().into_iter();
+
+        assert_eq!(i.next(), Some(ValueInHand::Set(8)));
+        assert_eq!(i.next(), Some(ValueInHand::Set(10)));
+        assert_eq!(i.next(), None);
+
+        h.push(Card::new(CardFace::try_from(6).unwrap(), CardSuit::Diamonds));
+
+        let mut i = h.values().into_iter();
+
+        assert_eq!(i.next(), Some(ValueInHand::Set(8)));
+        assert_eq!(i.next(), Some(ValueInHand::Set(10)));
+        assert_eq!(i.next(), Some(ValueInHand::Set(6)));
+        assert_eq!(i.next(), None);
     }
 }
