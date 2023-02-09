@@ -1,6 +1,8 @@
 
 use std::fmt::Display;
 
+use rand::Rng;
+
 #[derive(Debug, Clone, Copy)]
 pub enum CardSuit {
     Hearts,
@@ -35,7 +37,7 @@ pub struct CardValueError(u8);
 
 impl CardFace {
     pub fn number(val: u8) -> Result<Self, CardValueError> {
-        if (1..9).contains(&val) {
+        if (1..=9).contains(&val) {
             Ok(Self::Number(val))
         } else {
             Err(CardValueError(val))
@@ -78,6 +80,29 @@ pub struct Card {
 impl Card {
     pub fn new(face: CardFace, suit: CardSuit) -> Self {
         Self { suit, face }
+    }
+
+    /// Generate a card with a random face and suit
+    pub fn random() -> Result<Self, CardValueError> {
+        let mut rng = rand::thread_rng();
+
+        let suit = match rng.gen_range(1..=4) {
+            1 => CardSuit::Hearts,
+            2 => CardSuit::Diamonds,
+            3 => CardSuit::Spades,
+            4 => CardSuit::Clubs,
+            e => return Err(CardValueError(e))
+        };
+
+        let face = match rng.gen_range(1..=12) {
+            1 => CardFace::Ace,
+            10 => CardFace::Jack,
+            11 => CardFace::Queen,
+            12 => CardFace::King,
+            v => CardFace::number(v)?
+        };
+
+        Ok(Self { suit, face })
     }
 }
 
@@ -125,5 +150,12 @@ mod tests {
             ),
             10
         )
+    }
+
+    #[test]
+    fn random_cards() {
+        for _ in 0..100 {
+            Card::random().expect("Random card generation failed");
+        }
     }
 }
