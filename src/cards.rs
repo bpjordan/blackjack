@@ -3,7 +3,7 @@ use std::fmt::Display;
 
 use rand::Rng;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CardSuit {
     Hearts,
     Diamonds,
@@ -23,7 +23,7 @@ impl Display for CardSuit {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CardFace {
     Number(u8),
     Jack,
@@ -57,7 +57,7 @@ impl From<CardFace> for u8 {
             CardFace::Jack => 10,
             CardFace::King => 10,
             CardFace::Queen => 10,
-            CardFace::Ace => 11,
+            CardFace::Ace => 1,
         }
     }
 }
@@ -67,8 +67,8 @@ impl Display for CardFace {
         let face_str = match self {
             CardFace::Number(v) => v.to_string(),
             CardFace::Jack => "Jack".into(),
-            CardFace::King => "King".into(),
             CardFace::Queen => "Queen".into(),
+            CardFace::King => "King".into(),
             CardFace::Ace => "Ace".into(),
         };
 
@@ -76,7 +76,22 @@ impl Display for CardFace {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+/// A standard playing card (without Jokers).
+/// 
+/// Contains a Suit and a Face.
+/// 
+/// # Example
+/// 
+/// Generate a new card with new():
+/// ```
+/// use blackjack::cards::{Card, CardFace, CardSuit};
+/// 
+/// let card = Card::new(CardFace::try_from(4).unwrap(), CardSuit::Clubs);
+/// assert_eq!(card.face(), &CardFace::Number(4));
+/// assert_eq!(card.suit(), &CardSuit::Clubs);
+/// assert_eq!(card.to_string(), "4 of Clubs".to_string());
+/// ```
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Card {
     suit: CardSuit,
     face: CardFace
@@ -102,6 +117,14 @@ impl Card {
         let face = CardFace::try_from(rng.gen_range(1..=12))?;
 
         Ok(Self { suit, face })
+    }
+
+    pub fn face(&self) -> &CardFace {
+        &self.face
+    }
+
+    pub fn suit(&self) -> &CardSuit {
+        &self.suit
     }
 }
 
