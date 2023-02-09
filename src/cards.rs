@@ -30,6 +30,18 @@ pub enum CardFace {
     Ace
 }
 
+impl From<CardFace> for u8 {
+    fn from(value: CardFace) -> Self {
+        match value {
+            CardFace::Number(v) => v,
+            CardFace::Jack => 10,
+            CardFace::King => 10,
+            CardFace::Queen => 10,
+            CardFace::Ace => 11,
+        }
+    }
+}
+
 impl Display for CardFace {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let face_str = match self {
@@ -56,6 +68,12 @@ impl Card {
     }
 }
 
+impl From<Card> for u8 {
+    fn from(value: Card) -> Self {
+        Self::from(value.face)
+    }
+}
+
 impl Display for Card {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{} of {}", self.face, self.suit)
@@ -77,5 +95,22 @@ mod tests {
             Card::new(CardFace::Number(3), CardSuit::Hearts).to_string(),
             "3 of Hearts".to_owned()
         );
+    }
+
+    #[test]
+    fn card_values() {
+        assert_eq!(
+            u8::from(
+                Card::new(CardFace::Number(8), CardSuit::Diamonds)
+            ),
+            8
+        );
+
+        assert_eq!(
+            u8::from(
+                Card::new(CardFace::King, CardSuit::Clubs)
+            ),
+            10
+        )
     }
 }
