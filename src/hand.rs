@@ -23,7 +23,7 @@ impl Hand {
     fn values(&self) -> Vec<ValueInHand> {
         self.cards().iter().map(|c| {
             match c.face() {
-                CardFace::Number(v) => ValueInHand::Set(v.clone()),
+                CardFace::Number(v) => ValueInHand::Set(*v),
                 CardFace::Jack | CardFace::King | CardFace::Queen => ValueInHand::Set(10),
                 CardFace::Ace => ValueInHand::Wild,
             }
@@ -57,6 +57,12 @@ impl Hand {
         }
 
         sum
+    }
+}
+
+impl Default for Hand {
+    fn default() -> Self {
+        Self(Default::default())
     }
 }
 
