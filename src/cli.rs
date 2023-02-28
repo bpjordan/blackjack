@@ -1,4 +1,4 @@
-use std::io::{stdin, Read, stdout, Write};
+use std::io::{stdin, stdout, Write};
 
 use crate::game_rules::round::{
     BlackjackTable,
@@ -11,18 +11,20 @@ use crate::game_rules::round::{
 
 pub fn run_game() {
 
-    let mut user_input = [0u8];
+    let mut user_input_buf = String::new();
 
     'game_loop: loop {
 
-        print!("Press [s] to start or [q] to quit: ");
+        print!("Enter [s] to start a new blackjack game or [q] to quit: ");
 
         'start_loop: loop {
             stdout().flush().unwrap();
 
-            let choice = match stdin().read(&mut user_input[..]) {
-                Ok(1) => user_input[0],
-                Err(_) | Ok(_) => {
+            user_input_buf.clear();
+
+            let choice = match stdin().read_line(&mut user_input_buf) {
+                Ok(_) => user_input_buf.trim(),
+                Err(_) => {
                     eprintln!("Encountered an error reading from stdin, stopping game...");
 
                     break 'game_loop;
@@ -30,25 +32,23 @@ pub fn run_game() {
             };
 
             match choice {
-                b's' | b'S' => {
+                "s" | "S" => {
                     break 'start_loop;
                 }
 
-                b'q' | b'Q' => {
+                "q" | "Q" => {
                     println!("Goodbye!");
 
                     break 'game_loop;
                 }
 
-                b'\n' => { }
-
                 s => {
-                    println!("{} is not a choice, try again", s as char)
+                    println!("Input '{}' was not recognized, please enter either 's' or 'q'", s)
                 }
             }
         }
 
-        println!("Starting a new blackjack game...");
+        println!("Starting a new blackjack game. Enter q to quit at any time.");
         println!("Dealing...");
 
         let mut players_turn = match BlackjackTable::default().shuffle().deal() {
@@ -89,11 +89,13 @@ pub fn run_game() {
             println!("Your hand's value is {}", players_turn.player_hand().total_value());
 
             print!("Would you like to [h]it or [s]tand? > ");
-            stdout().flush().unwrap();
 
-            let choice = match stdin().read(&mut user_input[..]) {
-                Ok(1) => user_input[0],
-                Err(_) | Ok(_) => {
+            stdout().flush().unwrap();
+            user_input_buf.clear();
+
+            let choice = match stdin().read_line(&mut user_input_buf) {
+                Ok(_) => user_input_buf.trim(),
+                Err(_) => {
                     println!("Failed to read user input, exiting");
 
                     break 'game_loop;
@@ -101,7 +103,7 @@ pub fn run_game() {
             };
 
             match choice {
-                b'h' | b'H' => {
+                "h" | "H" => {
                     players_turn = match players_turn.hit() {
                         Ok(PlayerTurnResult::Hit(s)) => {
                             println!("You drew a {}", s.player_hand().cards().last().unwrap());
@@ -118,17 +120,15 @@ pub fn run_game() {
                     };
                 }
 
-                b's' | b'S' => {
+                "s" | "S" => {
                     break 'player_turn_loop players_turn.stand();
                 }
 
-                b'q' | b'Q' => {
+                "q" | "Q" => {
                     println!("Goodbye!");
 
                     break 'game_loop;
                 }
-
-                b'\n' => {}
 
                 s => {
                     println!("Unexpected response {s}")
