@@ -62,7 +62,7 @@ impl Hand {
 
 impl Default for Hand {
     fn default() -> Self {
-        Self(Default::default())
+        Self::new(Default::default())
     }
 }
 
@@ -74,10 +74,9 @@ enum ValueInHand {
 
 #[cfg(test)]
 mod tests {
-    use crate::cards::{Card, CardFace, CardSuit};
+    use crate::game_rules::cards::CardSuit;
 
-    use super::{Hand, ValueInHand};
-
+    use super::{Hand, ValueInHand, Card, CardFace};
 
     #[test]
     fn hand_values() {

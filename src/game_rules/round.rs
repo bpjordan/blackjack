@@ -1,8 +1,10 @@
 
-use crate::{deck::Deck, hand::Hand, cards::Card};
+use super::{deck::Deck, hand::Hand, cards::Card};
 use std::fmt::Debug;
 
-// Types to guard certain game actions
+// The game is a state machine with the following states
+// These states are types so that we can guard certain actions
+// So they can only occur during the appropriate game state.
 
 #[derive(Debug, Default)]
 pub struct NotStarted;
@@ -37,6 +39,15 @@ pub enum BlackjackRoundError {
     DeckEmpty
 }
 
+/// The blackjack table, containing all state necessary to keep
+/// track of an in-progress game
+/// 
+/// The game has a deck, from which cards are pulled,
+/// a hand for the dealer,
+/// and a hand for the player.
+/// 
+/// The state of the game is also tracked, so that actions
+/// can only be taken during the appropriate game state
 pub struct BlackjackTable<S: BlackjackTableState = NotStarted> {
     deck: Deck,
     dealer: Hand,
@@ -50,12 +61,13 @@ pub enum GameStartResult {
 }
 
 impl BlackjackTable<NotStarted> {
-    pub fn shuffle(mut self) -> Self {
-        self.deck.shuffle();
 
-        Self::new(self.deck, self.player, self.dealer)
-    }
 
+    /// Start the game by dealing cards from the deck
+    /// into the dealer's and player's hand.
+    /// 
+    /// The game can end immediately if the player, dealer, or both
+    /// draw a natural
     pub fn deal(mut self) -> Result<GameStartResult, BlackjackRoundError> {
 
         for _ in 0..2 {
@@ -121,6 +133,14 @@ pub enum PlayerTurnResult {
 }
 
 impl BlackjackTable<PlayerTurn> {
+
+    /// Draw a card into the player's hand
+    /// 
+    /// The game can end immediately if the player goes bust.
+    /// In this case, function returns a [PlayerTurnResult::Bust],
+    /// which ends the game.
+    /// 
+    /// Otherwise, returns a [PlayerTurnResult::Hit]
     pub fn hit(mut self) -> Result<PlayerTurnResult, BlackjackRoundError> {
 
         self.player.push(
@@ -136,6 +156,7 @@ impl BlackjackTable<PlayerTurn> {
                     self.player,
                     self.dealer
                 )
+                .with_result(GameResult::PlayerBust)
             ))
         } else {
             Ok(PlayerTurnResult::Hit(
@@ -148,6 +169,7 @@ impl BlackjackTable<PlayerTurn> {
         }
     }
 
+    /// End the player's turn and start the dealer's turn
     pub fn stand(self) -> Result<PlayerTurnResult, BlackjackRoundError> {
 
         Ok(PlayerTurnResult::Stand(
@@ -166,6 +188,14 @@ pub enum DealerTurnResult {
 }
 
 impl BlackjackTable<DealerTurn> {
+
+    /// Draw a card into the dealer's hand
+    /// 
+    /// The game can end immediately if the dealer goes bust.
+    /// In this case, function returns a [DealerTurnResult::Stand],
+    /// which ends the game.
+    /// 
+    /// Otherwise, returns a [PlayerTurnResult::Hit]
     pub fn hit(mut self) -> Result<DealerTurnResult, BlackjackRoundError> {
 
         self.dealer.push(
@@ -188,6 +218,7 @@ impl BlackjackTable<DealerTurn> {
         }
     }
 
+    /// End the Dealer's turn immediately, ending the game
     pub fn stand(self) -> BlackjackTable<GameOver> {
         
         let dealer_value = self.dealer.total_value();
@@ -218,10 +249,15 @@ impl BlackjackTable<DealerTurn> {
 }
 
 impl BlackjackTable<GameOver> {
+
+    /// Returns a reference to the [GameResult] enum
+    /// stored in the game's state
     pub fn result(&self) -> &GameResult {
         &self.game_state.0
     }
 
+    /// Set the result of the finished game to the
+    /// supplied [GameResult] enum
     pub fn with_result(self, res: GameResult) -> Self {
         Self {
             deck: self.deck,
@@ -237,14 +273,29 @@ impl<S: BlackjackTableState> BlackjackTable<S> {
         Self { deck, dealer, player, game_state: S::default() }
     }
 
+    /// Shuffle the deck so that drawn cards are random
+    pub fn shuffle(mut self) -> Self {
+        self.deck.shuffle();
+
+        Self::new(self.deck, self.player, self.dealer)
+    }
+
+    /// Returns an optional reference to the first
+    /// [Card] in the dealer's hand, i.e. the card
+    /// that is visible to players during their turn
+    /// 
+    /// Should only return [None] when the dealer's hand
+    /// is empty, i.e. before the game has been dealt
     pub fn showing_card(&self) -> Option<&Card> {
         self.dealer.cards().get(0)
     }
 
+    /// Returns a reference to the player's [Hand]
     pub fn player_hand(&self) -> &Hand {
         &self.player
     }
 
+    /// Returns a reference to the dealer's [Hand]
     pub fn dealer_hand(&self) -> &Hand {
         &self.dealer
     }

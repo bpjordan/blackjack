@@ -1,9 +1,7 @@
 
 use rand::seq::SliceRandom;
 
-use crate::cards::{CardFace, CardSuit};
-
-use super::cards::Card;
+use super::cards::{Card, CardFace, CardSuit};
 
 pub struct Deck(Vec<Card>);
 
@@ -40,7 +38,7 @@ impl Default for Deck {
 
 #[cfg(test)]
 mod test {
-    use crate::cards::{Card, CardFace, CardSuit};
+    use super::{Card, CardFace, CardSuit};
 
     use super::Deck;
 
