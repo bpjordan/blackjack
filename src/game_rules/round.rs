@@ -128,7 +128,6 @@ impl BlackjackTable<NotStarted> {
 
 pub enum PlayerTurnResult {
     Hit(BlackjackTable<PlayerTurn>),
-    Stand(BlackjackTable<DealerTurn>),
     Bust(BlackjackTable<GameOver>)
 }
 
@@ -170,15 +169,13 @@ impl BlackjackTable<PlayerTurn> {
     }
 
     /// End the player's turn and start the dealer's turn
-    pub fn stand(self) -> Result<PlayerTurnResult, BlackjackRoundError> {
+    pub fn stand(self) -> BlackjackTable<DealerTurn> {
 
-        Ok(PlayerTurnResult::Stand(
-            BlackjackTable::new(
-                self.deck,
-                self.player,
-                self.dealer
-            )
-        ))
+        BlackjackTable::new(
+            self.deck,
+            self.player,
+            self.dealer
+        )
     }
 }
 

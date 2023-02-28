@@ -114,19 +114,12 @@ pub fn run_game() {
 
                             continue 'game_loop;
                         }
-                        Ok(PlayerTurnResult::Stand(_)) => unreachable!(),
                         Err(_) => todo!(),
                     };
                 }
 
                 b's' | b'S' => {
-                    match players_turn.stand() {
-                        Ok(PlayerTurnResult::Stand(s)) => {
-                            break 'player_turn_loop s
-                        },
-                        Ok(_) => unreachable!(),
-                        Err(_) => todo!(),
-                    }
+                    break 'player_turn_loop players_turn.stand();
                 }
 
                 b'q' | b'Q' => {
