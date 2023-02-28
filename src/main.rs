@@ -2,6 +2,7 @@
 use clap::Parser;
 
 mod cli;
+mod tui;
 mod game_rules;
 
 #[derive(Parser)]
@@ -11,7 +12,7 @@ pub struct Config {
 
     /// Only use ASCII text
     /// (By default UTF-8 characters are used for card suits)
-    #[arg(short, long, action = clap::ArgAction::SetFalse)]
+    #[arg(short, long, action = clap::ArgAction::SetTrue)]
     ascii: bool,
 
     /// Run the game as a CLI instead of a TUI

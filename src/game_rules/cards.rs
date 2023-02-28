@@ -3,6 +3,10 @@ use std::fmt::Display;
 
 use rand::Rng;
 
+pub trait AsPrettyString {
+    fn as_pretty_string(&self) -> String;
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CardSuit {
     Hearts,
@@ -13,12 +17,29 @@ pub enum CardSuit {
 
 impl Display for CardSuit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let suit_str = match self {
-            CardSuit::Hearts => "Hearts",
-            CardSuit::Diamonds => "Diamonds",
-            CardSuit::Spades => "Spades",
-            CardSuit::Clubs => "Clubs",
+        let suit_str = if f.sign_plus() {
+            match self {
+                CardSuit::Hearts => "Hearts",
+                CardSuit::Diamonds => "Diamonds",
+                CardSuit::Spades => "Spades",
+                CardSuit::Clubs => "Clubs",
+            }
+        } else if f.alternate() {
+            match self {
+                CardSuit::Hearts => "H",
+                CardSuit::Diamonds => "D",
+                CardSuit::Spades => "S",
+                CardSuit::Clubs => "C",
+            }
+        } else {
+            match self {
+                CardSuit::Hearts => "♥",
+                CardSuit::Diamonds => "♦",
+                CardSuit::Spades => "♠",
+                CardSuit::Clubs => "♣",
+            }
         };
+
         write!(f, "{suit_str}")
     }
 }
@@ -64,12 +85,22 @@ impl From<CardFace> for u8 {
 
 impl Display for CardFace {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let face_str = match self {
-            CardFace::Number(v) => v.to_string(),
-            CardFace::Jack => "Jack".into(),
-            CardFace::Queen => "Queen".into(),
-            CardFace::King => "King".into(),
-            CardFace::Ace => "Ace".into(),
+        let face_str = if f.sign_plus() {
+            match self {
+                CardFace::Number(v) => v.to_string(),
+                CardFace::Jack => "Jack".into(),
+                CardFace::Queen => "Queen".into(),
+                CardFace::King => "King".into(),
+                CardFace::Ace => "Ace".into(),
+            }
+        } else {
+            match self {
+                CardFace::Number(v) => v.to_string(),
+                CardFace::Jack => "J".into(),
+                CardFace::Queen => "Q".into(),
+                CardFace::King => "K".into(),
+                CardFace::Ace => "A".into(),
+            }
         };
 
         write!(f, "{face_str}")
@@ -136,7 +167,14 @@ impl From<Card> for u8 {
 
 impl Display for Card {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} of {}", self.face, self.suit)
+        if f.sign_plus() {
+            self.face.fmt(f)?;
+            write!(f, " of ")?;
+            self.suit.fmt(f)
+        } else {
+            self.face.fmt(f)?;
+            self.suit.fmt(f)
+        }
     }
 }
 
@@ -146,15 +184,38 @@ mod tests {
 
     #[test]
     fn card_strings() {
+        let test_card = Card::new(CardFace::Ace, CardSuit::Spades);
         assert_eq!(
-            Card::new(CardFace::Ace, CardSuit::Spades).to_string(),
-            "Ace of Spades".to_owned()
+            &format!("{test_card:+}"),
+            "Ace of Spades"
         );
 
         assert_eq!(
-            Card::new(CardFace::try_from(3).unwrap(), CardSuit::Hearts).to_string(),
-            "3 of Hearts".to_owned()
+            &format!("{test_card:#}"),
+            "AS"
         );
+
+        assert_eq!(
+            &format!("{test_card}"),
+            "A♠"
+        );
+
+        let test_card = Card::new(CardFace::try_from(3).unwrap(), CardSuit::Hearts);
+        assert_eq!(
+            &format!("{test_card:+}"),
+            "3 of Hearts"
+        );
+
+        assert_eq!(
+            &format!("{test_card:#}"),
+            "3H"
+        );
+
+        assert_eq!(
+            &format!("{test_card}"),
+            "3♥"
+        );
+
     }
 
     #[test]

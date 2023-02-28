@@ -73,7 +73,13 @@ pub fn run_game(cfg: crate::Config) {
         };
 
         match players_turn.showing_card() {
-            Some(c) => println!("The dealer is showing a {}", c),
+            Some(c) => {
+                if cfg.ascii {
+                    println!("The dealer is showing a {c:+#}")
+                } else {
+                    println!("The dealer is showing {c}")
+                }
+            },
             None => unreachable!(),
         }
 
@@ -81,14 +87,16 @@ pub fn run_game(cfg: crate::Config) {
             println!("Your hand is:");
 
             for c in players_turn.player_hand().cards() {
-                println!("{c}")
+                println!("{c:+}")
             }
         } else {
-            println!("Your hand is:");
+            print!("Your hand is: ");
 
             for c in players_turn.player_hand().cards() {
-                println!("{c}")
+                print!("{c} ")
             }
+
+            println!()
         }
 
         let mut dealers_turn = 'player_turn_loop: loop {
@@ -152,11 +160,13 @@ pub fn run_game(cfg: crate::Config) {
                 println!("{c}");
             }
         } else {
-            println!("The dealer's hand is:");
+            print!("The dealer's hand is: ");
 
             for c in dealers_turn.dealer_hand().cards() {
-                println!("{c}");
+                print!("{c} ")
             }
+
+            println!()
         }
 
         let round_result = loop {
