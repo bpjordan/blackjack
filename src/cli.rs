@@ -9,7 +9,7 @@ use crate::game_rules::round::{
     GameResult
 };
 
-pub fn run_game() {
+pub fn run_game(cfg: crate::Config) {
 
     let mut user_input_buf = String::new();
 
@@ -77,10 +77,18 @@ pub fn run_game() {
             None => unreachable!(),
         }
 
-        println!("Your hand is:");
+        if cfg.ascii {
+            println!("Your hand is:");
 
-        for c in players_turn.player_hand().cards() {
-            println!("{c}")
+            for c in players_turn.player_hand().cards() {
+                println!("{c}")
+            }
+        } else {
+            println!("Your hand is:");
+
+            for c in players_turn.player_hand().cards() {
+                println!("{c}")
+            }
         }
 
         let mut dealers_turn = 'player_turn_loop: loop {
@@ -137,10 +145,18 @@ pub fn run_game() {
 
         };
 
-        println!("The dealer's hand is:");
+        if cfg.ascii {
+            println!("The dealer's hand is:");
 
-        for c in dealers_turn.dealer_hand().cards() {
-            println!("{c}");
+            for c in dealers_turn.dealer_hand().cards() {
+                println!("{c}");
+            }
+        } else {
+            println!("The dealer's hand is:");
+
+            for c in dealers_turn.dealer_hand().cards() {
+                println!("{c}");
+            }
         }
 
         let round_result = loop {
