@@ -1,6 +1,5 @@
 use super::cards::{Card, CardFace};
 
-
 const CARD_ICON_10: &str = "\
 -----------
 |10 	  |
@@ -133,12 +132,12 @@ const CARD_ICON_J: &str = "\
 
 const CARD_ICON_FLIPPED_ASCII: &str = "\
 -----------
-| H D C S |
 |         |
 | /\\_/\\   |
 |(=^.^=)  |
 |(\") (\")_/|
-| H D C S |
+|         |
+|         |
 -----------";
 
 const CARD_ICON_FLIPPED: &str = "\
