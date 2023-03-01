@@ -1,5 +1,6 @@
 
 pub mod round;
-mod cards;
+pub mod cards;
 mod deck;
 mod hand;
+mod card_icons;

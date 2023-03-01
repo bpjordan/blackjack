@@ -27,7 +27,6 @@ fn main() {
     if config.cli {
         cli::run_game(config);
     } else {
-        println!("Sorry, the TUI version of the game is not implemented yet");
-        println!("Run with -c to start the CLI game");
+        tui::run_game(config);
     }
 }
