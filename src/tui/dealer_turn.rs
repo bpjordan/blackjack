@@ -1,6 +1,6 @@
-use super::{end_game, set_message};
+use super::{set_message, game_states};
 
-use super::hand_display::display_dealer_hand;
+use super::update_hands::update_dealer_hand;
 
 use crate::Config;
 use crate::game_rules::round::{DealerTurnResult, DealerTurn, BlackjackTable};
@@ -42,15 +42,15 @@ pub(crate) fn run_dealer_turn(s: &mut Cursive, cfg: Config) {
                     match table.hit() {
                         Ok(DealerTurnResult::Hit(t)) => {
                             s.set_user_data(t);
-                            display_dealer_hand(s, cfg.ascii);
+                            update_dealer_hand(s, cfg.ascii);
                         },
                         Ok(DealerTurnResult::Stand(t)) => {
                             shutdown_tx.send(()).unwrap();
 
                             s.set_user_data(t);
-                            display_dealer_hand(s, cfg.ascii);
+                            update_dealer_hand(s, cfg.ascii);
 
-                            end_game(s, cfg);
+                            game_states::end_game(s, cfg);
                         }
                         Err(_) => todo!(),
                     }

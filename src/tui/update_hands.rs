@@ -6,8 +6,8 @@ use cursive::Cursive;
 use cursive::views::{Dialog, DummyView, TextView, LinearLayout};
 
 
-/// Update the display of the dealer's hand to reflect the current game state
-pub fn display_dealer_hand(s: &mut Cursive, ascii: bool) {
+/// Update the display to reflect the dealer's current hand
+pub fn update_dealer_hand(s: &mut Cursive, ascii: bool) {
     if let Some(_) = s.user_data::<BlackjackTable<NotStarted>>() {
         let card_display = LinearLayout::horizontal()
         .child(Dialog::text(Card::flipped_icon(ascii)))
@@ -59,7 +59,8 @@ pub fn display_dealer_hand(s: &mut Cursive, ascii: bool) {
     }
 }
 
-pub fn display_player_hand(s: &mut Cursive, ascii: bool) {
+/// Update the display to reflect the player's current hand
+pub fn update_player_hand(s: &mut Cursive, ascii: bool) {
     if let Some(_) = s.user_data::<BlackjackTable<NotStarted>>() {
         let card_display = LinearLayout::horizontal()
         .child(Dialog::text(Card::flipped_icon(ascii)))
