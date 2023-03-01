@@ -21,7 +21,7 @@ pub(crate) fn run_dealer_turn(s: &mut Cursive, cfg: Config) {
     let cb_sink = s.cb_sink().clone();
 
     std::thread::spawn(move || {
-        let pause_time = Duration::from_millis(500);
+        let pause_time = Duration::from_millis(1000);
 
         let (tx, rx) = mpsc::channel();
 

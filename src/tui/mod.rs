@@ -1,7 +1,8 @@
 
+use cursive::theme::{PaletteColor, Color, BaseColor};
 use cursive::view::Nameable;
 use cursive::{Cursive, CursiveExt};
-use cursive::views::{LinearLayout, Dialog, TextView, };
+use cursive::views::{LinearLayout, Dialog, TextView};
 
 use crate::Config;
 use crate::game_rules::round::{
@@ -23,6 +24,10 @@ pub fn run_game(cfg: Config) {
     let mut tui = Cursive::default();
 
     tui.add_global_callback('q', |s| s.quit());
+
+    tui.update_theme(|t| {
+        t.palette[PaletteColor::Background] = Color::Dark(BaseColor::Green);
+    });
 
     let hands = LinearLayout::vertical()
     .child(Dialog::text("Dealer's hand placeholder").title("Dealer").with_name("dealer_hand"))

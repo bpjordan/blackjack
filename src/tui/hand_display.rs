@@ -10,11 +10,11 @@ use cursive::views::{Dialog, DummyView, TextView, LinearLayout};
 pub fn display_dealer_hand(s: &mut Cursive, ascii: bool) {
     if let Some(_) = s.user_data::<BlackjackTable<NotStarted>>() {
         let card_display = LinearLayout::horizontal()
-        .child(TextView::new(Card::flipped_icon(ascii)))
+        .child(Dialog::text(Card::flipped_icon(ascii)))
         .child(DummyView)
-        .child(TextView::new(Card::flipped_icon(ascii)))
+        .child(Dialog::text(Card::flipped_icon(ascii)))
         .child(DummyView)
-        .child(TextView::new(Card::flipped_icon(ascii)));
+        .child(Dialog::text(Card::flipped_icon(ascii)));
 
         s.call_on_name("dealer_hand", |v: &mut Dialog| {
             v.set_title("Dealer's hand");
@@ -24,9 +24,9 @@ pub fn display_dealer_hand(s: &mut Cursive, ascii: bool) {
         let showing_card_icon = table.showing_card().unwrap().icon(ascii);
 
         let card_display = LinearLayout::horizontal()
-        .child(TextView::new(showing_card_icon))
+        .child(Dialog::text(showing_card_icon))
         .child(DummyView)
-        .child(TextView::new(Card::flipped_icon(ascii)));
+        .child(Dialog::text(Card::flipped_icon(ascii)));
 
         s.call_on_name("dealer_hand", |v: &mut Dialog| {
             v.set_title("Dealer's hand");
@@ -62,11 +62,11 @@ pub fn display_dealer_hand(s: &mut Cursive, ascii: bool) {
 pub fn display_player_hand(s: &mut Cursive, ascii: bool) {
     if let Some(_) = s.user_data::<BlackjackTable<NotStarted>>() {
         let card_display = LinearLayout::horizontal()
-        .child(TextView::new(Card::flipped_icon(ascii)))
+        .child(Dialog::text(Card::flipped_icon(ascii)))
         .child(DummyView)
-        .child(TextView::new(Card::flipped_icon(ascii)))
+        .child(Dialog::text(Card::flipped_icon(ascii)))
         .child(DummyView)
-        .child(TextView::new(Card::flipped_icon(ascii)));
+        .child(Dialog::text(Card::flipped_icon(ascii)));
 
         s.call_on_name("player_hand", |v: &mut Dialog| {
             v.set_title("Your hand");
@@ -113,7 +113,7 @@ fn display_full_hand(hand: &Vec<Card>, ascii: bool) -> LinearLayout {
     let mut l = LinearLayout::horizontal();
 
     for c in hand {
-        l.add_child(TextView::new(c.icon(ascii)));
+        l.add_child(Dialog::text(c.icon(ascii)));
         l.add_child(DummyView);
     }
 
