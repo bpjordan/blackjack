@@ -5,7 +5,7 @@ mod cli;
 mod tui;
 mod game_rules;
 
-#[derive(Parser)]
+#[derive(Parser, Clone, Copy)]
 #[command(author = "Bronson Jordan")]
 #[command(about = "Play Blackjack in a CLI or TUI")]
 pub struct Config {
