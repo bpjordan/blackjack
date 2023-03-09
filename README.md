@@ -27,3 +27,10 @@ If the UTF-8 characters cause issues, use `-a` to display only ASCII characters 
 ## Game Over
 
 ![](screengrabs/gameover.png)
+
+# Windows Compatibility
+
+To provide Windows compatibility, the `windows-compatible` feature flag is provided, which
+uses the `crossterm-backend` feature for the `cursive` TUI library.
+
+To run program on Windows, use `cargo run --no-default-features --features windows-compatible`
